@@ -1,30 +1,72 @@
 import os
 import sys
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, func, ForeignKey
 from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+
+# Relationships
+# +Users and Posts → One-to-Many (A user can create multiple posts).
+# +Users and Likes → Many-to-Many (A user can like multiple posts, and a post can have multiple likes).
+# +Users and Comments → One-to-Many (A user can comment on multiple posts).
+# +Users and Followers → Many-to-Many (Users can follow each other).
+
+class User(Base):
+    __tablename__ = 'user'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(unique=True)
+    profile_picture: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column(nullable=False)
 
-class Address(Base):
-    __tablename__ = 'address'
+
+class Post(Base):
+    __tablename__ = 'post'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
-    id: Mapped[int] = mapped_column(primary_key=True)
-    street_name: Mapped[str]
-    street_number: Mapped[str]
-    post_code: Mapped[str] = mapped_column(nullable=False)
+    post_id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
+    caption: Mapped[str] = mapped_column(nullable=False)
+    imgage_url: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column()
+   
+
+class Likes(Base):
+    __tablename__ = 'likes'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    like_id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(nullable=False)
+    post_id: Mapped[int] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column(nullable=False)
+
+
+class Comments(Base):
+    __tablename__ = 'comments'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    comment_id: Mapped[int] = mapped_column(primary_key=True)
+    post_id: Mapped[int] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(nullable=False)
+    comment_text: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column(nullable=False)
+
+
+class Followers(Base):
+    __tablename__ = 'followers'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
+    follower_id: Mapped[int] = mapped_column(primary_key=True)
+    following_id: Mapped[int] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column(nullable=False)
+
 
     def to_dict(self):
         return {}
-
 ## Draw from SQLAlchemy base
 try:
     result = render_er(Base, 'diagram.png')
