@@ -40,8 +40,8 @@ class Likes(Base):
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     like_id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(nullable=False)
-    post_id: Mapped[int] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("post.post_id"))
     created_at: Mapped[str] = mapped_column(nullable=False)
 
 
@@ -50,8 +50,8 @@ class Comments(Base):
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     comment_id: Mapped[int] = mapped_column(primary_key=True)
-    post_id: Mapped[int] = mapped_column(nullable=False)
-    user_id: Mapped[int] = mapped_column(nullable=False)
+    post_id: Mapped[int] = mapped_column(ForeignKey("post.post_id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
     comment_text: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[str] = mapped_column(nullable=False)
 
